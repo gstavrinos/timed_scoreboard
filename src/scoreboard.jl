@@ -1,23 +1,37 @@
 #Pkg.add("Gtk")
+#Pkg.add("Dates")
 using Gtk.ShortNames
 
 start_button = Button()
 time_label = Label("")
+run_timer = true
 
 function startStopButton(widget)
+    global run_timer, time_label
     if getproperty(widget, :label, String) == "Start"
+        run_timer = true
         setproperty!(widget, :label, "Stop")
+        prev = now()
+        @async while run_timer
+            curr = now()
+            t = Dates.value(convert(Dates.Millisecond, curr))
+            setproperty!(time_label, :label, t)
+            prev = curr
+            sleep(1)
+        end
     else
+        run_timer = false
         setproperty!(widget, :label, "Start")
     end
 end
 
 function clearButton(widget)
-    global start_button
+    global start_button, time_label, run_timer
+    run_timer = false
     if getproperty(start_button, :label, String) == "Stop"
         setproperty!(start_button, :label, "Start")
     end
-    println("Clear button! yay!")
+    setproperty!(time_label, :label, "00:00:000")
 end
 
 function addButton(widget)
@@ -40,8 +54,6 @@ function main()
     signal_connect(addButton, add_button, "clicked")
 
     time_label = builder["label1"]
-
-
 
     # Put your GUI code here
 
