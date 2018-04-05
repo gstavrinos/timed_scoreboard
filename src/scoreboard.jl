@@ -1,23 +1,37 @@
 #Pkg.add("Gtk")
-#Pkg.add("Dates")
 using Gtk.ShortNames
 
 start_button = Button()
 time_label = Label("")
 run_timer = true
+start_t = DateTime(0)
 
 function startStopButton(widget)
-    global run_timer, time_label
+    global run_timer, time_label, start_t
     if getproperty(widget, :label, String) == "Start"
+        if getproperty(time_label, :label, String) == "00:00.000"
+            start_t = DateTime(0)
+        end
         run_timer = true
         setproperty!(widget, :label, "Stop")
         prev = now()
         @async while run_timer
             curr = now()
-            t = Dates.value(convert(Dates.Millisecond, curr))
-            setproperty!(time_label, :label, t)
+            t = curr - prev
+            start_t += t
+            final_t = Dates.Time(start_t + t)
+            formatted_final_t = Dates.format(final_t, "MM:SS.s")
+            l = length(formatted_final_t)
+
+            if l == 7
+                formatted_final_t *= "00"
+            elseif l == 8
+                formatted_final_t *= "0"
+            end
+
+            setproperty!(time_label, :label, formatted_final_t)
             prev = curr
-            sleep(1)
+            sleep(0.001)
         end
     else
         run_timer = false
@@ -31,7 +45,7 @@ function clearButton(widget)
     if getproperty(start_button, :label, String) == "Stop"
         setproperty!(start_button, :label, "Start")
     end
-    setproperty!(time_label, :label, "00:00:000")
+    setproperty!(time_label, :label, "00:00.000")
 end
 
 function addButton(widget)
