@@ -49,6 +49,7 @@ function clearButton(widget)
 end
 
 function addButton(widget)
+    global time_label
     println("Add button! yay!")
 end
 
@@ -68,8 +69,6 @@ function main()
     signal_connect(addButton, add_button, "clicked")
 
     time_label = builder["label1"]
-
-    # Put your GUI code here
 
     if !isinteractive()
         c = Condition()

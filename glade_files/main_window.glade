@@ -189,7 +189,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">end</property>
-                    <property name="label" translatable="yes">00:00:000</property>
+                    <property name="label" translatable="yes">00:00.000</property>
                     <attributes>
                       <attribute name="font-desc" value="&lt;Enter Value&gt; 32"/>
                     </attributes>
