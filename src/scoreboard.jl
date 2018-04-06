@@ -5,6 +5,11 @@ start_button = Button()
 time_label = Label("")
 run_timer = true
 start_t = DateTime(0)
+popup_glade_file = ""
+popup_window = Window(visible=false)
+name_entry = Entry()
+name_entries = Array{String}(0)
+time_entries = Array{String}(0)
 
 function startStopButton(widget)
     global run_timer, time_label, start_t
@@ -49,13 +54,47 @@ function clearButton(widget)
 end
 
 function addButton(widget)
-    global time_label
-    println("Add button! yay!")
+    global time_label, popup_glade_file, popup_window, name_entry
+    builder2 = Builder(filename=popup_glade_file)
+    popup_window = builder2["window1"]
+    setproperty!(popup_window, :title, "Add new entry! :)")
+    add_button = builder2["button1"]
+    cancel_button = builder2["button2"]
+    name_entry = builder2["entry1"]
+    signal_connect(addNewName, add_button, "clicked")
+    signal_connect(killPopup, cancel_button, "clicked")
+    showall(popup_window)
 end
 
+function killPopup(widget)
+    global popup_window
+    destroy(popup_window)
+end
+
+function addNewName(widget)
+    global name_entry, name_entries, time_label
+    n = getproperty(name_entry, :text, String)
+    if length(n) > 0
+        if !(n in name_entries)
+            append!(name_entries, n)
+            append!(time_entries, getproperty(time_label, :label, String))
+            #updateEntries()
+            killPopup(widget)
+        else
+            # Popup name already exists! Damn!
+            println("TODO1")
+        end
+    else
+        # Popup no input! Damn!
+        println("TODO2")
+    end
+end
+
+
 function main()
-    global start_button, time_label
+    global start_button, time_label, popup_glade_file
     glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/main_window.glade"
+    popup_glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/name_popup.glade"
     builder = Builder(filename=glade_file)
     window = builder["applicationwindow1"]
     setproperty!(window, :title, "Timed Scoreboard :)")
