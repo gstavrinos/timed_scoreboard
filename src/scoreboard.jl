@@ -106,16 +106,15 @@ function updateEntries()
     sort!(entries)
     i = 2
     maxi = length(entries)
+    for ii in range(1, maxi-1)
+        delete!(grid, grid[1,ii+1])
+        delete!(grid, grid[2,ii+1])
+        delete!(grid, grid[3,ii+1])
+    end
     for e in entries
-        if i < maxi
-            setproperty!(grid[1,i], :label, string(i-1))
-            setproperty!(grid[2,i], :label, e.name)
-            setproperty!(grid[3,i], :label, e.time)
-        else
-            grid[1,i] = Label(string(i-1))
-            grid[2,i] = Label(e.name)
-            grid[3,i] = Label(e.time)
-        end
+        grid[1,i] = Label(string(i-1))
+        grid[2,i] = Label(e.name)
+        grid[3,i] = Label(e.time)
         i += 1
     end
     showall(window)
@@ -123,8 +122,8 @@ end
 
 function main()
     global start_button, time_label, popup_glade_file, grid, window
-    glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/main_window.glade"
     popup_glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/name_popup.glade"
+    glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/main_window.glade"
     builder = Builder(filename=glade_file)
     window = builder["applicationwindow1"]
     setproperty!(window, :title, "Timed Scoreboard :)")
