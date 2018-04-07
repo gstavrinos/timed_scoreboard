@@ -1,6 +1,11 @@
 #Pkg.add("Gtk")
 using Gtk.ShortNames
 
+struct ListEntry
+    name::String
+    time::String
+end
+
 start_button = Button()
 time_label = Label("")
 run_timer = true
@@ -8,8 +13,16 @@ start_t = DateTime(0)
 popup_glade_file = ""
 popup_window = Window(visible=false)
 name_entry = Entry()
-name_entries = Array{String}(0)
-time_entries = Array{String}(0)
+entries = ListEntry[]
+grid = Grid()
+window = Window(visible=false)
+
+Base.:(==)(x::ListEntry, y::ListEntry) = x.name == y.name
+Base.:(<)(x::ListEntry, y::ListEntry) = x.time < y.time
+Base.:(isless)(x::ListEntry, y::ListEntry) = x.time < y.time
+Base.:(<=)(x::ListEntry, y::ListEntry) = x.time <= y.time
+Base.:(>)(x::ListEntry, y::ListEntry) = x.time > y.time
+Base.:(>=)(x::ListEntry, y::ListEntry) = x.time >= y.time
 
 function startStopButton(widget)
     global run_timer, time_label, start_t
@@ -72,27 +85,44 @@ function killPopup(widget)
 end
 
 function addNewName(widget)
-    global name_entry, name_entries, time_label
+    global name_entry, entries, time_label
     n = getproperty(name_entry, :text, String)
     if length(n) > 0
-        if !(n in name_entries)
-            append!(name_entries, n)
-            append!(time_entries, getproperty(time_label, :label, String))
-            #updateEntries()
+        le = ListEntry(n, getproperty(time_label, :label, String))
+        if !(le in entries)
+            push!(entries, le)
+            updateEntries()
             killPopup(widget)
         else
-            # Popup name already exists! Damn!
-            println("TODO1")
+            warn_dialog("This name already exists on the list!")
         end
     else
-        # Popup no input! Damn!
-        println("TODO2")
+        warn_dialog("The name cannot be empty!")
     end
 end
 
+function updateEntries()
+    global grid, entries, window
+    sort!(entries)
+    i = 2
+    maxi = length(entries)
+    for e in entries
+        if i < maxi
+            setproperty!(grid[1,i], :label, string(i-1))
+            setproperty!(grid[2,i], :label, e.name)
+            setproperty!(grid[3,i], :label, e.time)
+        else
+            grid[1,i] = Label(string(i-1))
+            grid[2,i] = Label(e.name)
+            grid[3,i] = Label(e.time)
+        end
+        i += 1
+    end
+    showall(window)
+end
 
 function main()
-    global start_button, time_label, popup_glade_file
+    global start_button, time_label, popup_glade_file, grid, window
     glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/main_window.glade"
     popup_glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/name_popup.glade"
     builder = Builder(filename=glade_file)
@@ -103,6 +133,7 @@ function main()
     start_button = builder["button1"]
     clear_button = builder["button2"]
     add_button = builder["button4"]
+    grid = builder["grid1"]
     signal_connect(startStopButton, start_button, "clicked")
     signal_connect(clearButton, clear_button, "clicked")
     signal_connect(addButton, add_button, "clicked")
