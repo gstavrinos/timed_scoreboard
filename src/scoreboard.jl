@@ -80,23 +80,21 @@ function addButton(widget)
 end
 
 function deleteButton(widget)
-    global grid, entries
+    global grid, entries, window
     maxi = length(entries)
     for i in range(1, maxi)
-        println(getproperty(grid[4,i+1], :name, String))
         if getproperty(grid[4,i+1], :name, String) == getproperty(widget, :name, String)
             le = ListEntry(getproperty(grid[2,i+1], :label, String), getproperty(grid[3,i+1], :label, String))
-            delete!(grid, grid[1,i+1])
-            delete!(grid, grid[2,i+1])
-            delete!(grid, grid[3,i+1])
-            delete!(grid, grid[4,i+1])
+            # delete!(grid, grid[1,i+1])
+            # delete!(grid, grid[2,i+1])
+            # delete!(grid, grid[3,i+1])
+            # delete!(grid, grid[4,i+1])
             deleteat!(entries, i)
-            println("yay!")
             break
         end
     end
-    println(entries)
-    updateEntries()
+    showall(window)
+    updateEntries(true)
 end
 
 function killPopup(widget)
@@ -121,11 +119,14 @@ function addNewName(widget)
     end
 end
 
-function updateEntries()
+function updateEntries(fromDelete=false)
     global grid, entries, window
     sort!(entries)
     i = 2
     maxi = length(entries)
+    if fromDelete
+        maxi += 2
+    end
     for ii in range(1, maxi-1)
         delete!(grid, grid[1,ii+1])
         delete!(grid, grid[2,ii+1])
