@@ -79,6 +79,26 @@ function addButton(widget)
     showall(popup_window)
 end
 
+function deleteButton(widget)
+    global grid, entries
+    maxi = length(entries)
+    for i in range(1, maxi)
+        println(getproperty(grid[4,i+1], :name, String))
+        if getproperty(grid[4,i+1], :name, String) == getproperty(widget, :name, String)
+            le = ListEntry(getproperty(grid[2,i+1], :label, String), getproperty(grid[3,i+1], :label, String))
+            delete!(grid, grid[1,i+1])
+            delete!(grid, grid[2,i+1])
+            delete!(grid, grid[3,i+1])
+            delete!(grid, grid[4,i+1])
+            deleteat!(entries, i)
+            println("yay!")
+            break
+        end
+    end
+    println(entries)
+    updateEntries()
+end
+
 function killPopup(widget)
     global popup_window
     destroy(popup_window)
@@ -110,11 +130,16 @@ function updateEntries()
         delete!(grid, grid[1,ii+1])
         delete!(grid, grid[2,ii+1])
         delete!(grid, grid[3,ii+1])
+        delete!(grid, grid[4,ii+1])
     end
     for e in entries
         grid[1,i] = Label(string(i-1))
         grid[2,i] = Label(e.name)
         grid[3,i] = Label(e.time)
+        xb = Button("X")
+        setproperty!(xb, :name, i)
+        signal_connect(deleteButton, xb, "clicked")
+        grid[4,i] = xb
         i += 1
     end
     showall(window)
