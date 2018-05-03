@@ -16,6 +16,7 @@ name_entry = Entry()
 entries = ListEntry[]
 grid = Grid()
 window = Window(visible=false)
+resizable_widgets = []
 
 Base.:(==)(x::ListEntry, y::ListEntry) = x.name == y.name
 Base.:(<)(x::ListEntry, y::ListEntry) = x.time < y.time
@@ -77,6 +78,18 @@ function addButton(widget)
     signal_connect(addNewName, add_button, "clicked")
     signal_connect(killPopup, cancel_button, "clicked")
     showall(popup_window)
+end
+
+function increaseFont(widget)
+    global time_label, grid
+    #println(getproperty(time_label, :attributes, PangoAttrList))
+    #setproperty!(time_label, :use_markup, true)
+end
+
+function decreaseFont(widget)
+    global time_label, grid
+    #println(fieldnames(typeof(time_label)))
+    #println(getproperty(time_label, :font, Int))
 end
 
 function deleteButton(widget)
@@ -158,10 +171,14 @@ function main()
     start_button = builder["button1"]
     clear_button = builder["button2"]
     add_button = builder["button4"]
+    plus_button = builder["button3"]
+    minus_button = builder["button5"]
     grid = builder["grid1"]
     signal_connect(startStopButton, start_button, "clicked")
     signal_connect(clearButton, clear_button, "clicked")
     signal_connect(addButton, add_button, "clicked")
+    signal_connect(increaseFont, plus_button, "clicked")
+    signal_connect(decreaseFont, minus_button, "clicked")
 
     time_label = builder["label1"]
 
@@ -174,4 +191,6 @@ function main()
     end
 end
 
+
+# TODO scrollable grid, keyboard shortcuts
 main()
