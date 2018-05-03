@@ -98,10 +98,6 @@ function deleteButton(widget)
     for i in range(1, maxi)
         if getproperty(grid[4,i+1], :name, String) == getproperty(widget, :name, String)
             le = ListEntry(getproperty(grid[2,i+1], :label, String), getproperty(grid[3,i+1], :label, String))
-            # delete!(grid, grid[1,i+1])
-            # delete!(grid, grid[2,i+1])
-            # delete!(grid, grid[3,i+1])
-            # delete!(grid, grid[4,i+1])
             deleteat!(entries, i)
             break
         end
@@ -134,11 +130,12 @@ end
 
 function updateEntries(fromDelete=false)
     global grid, entries, window
-    sort!(entries)
     i = 2
     maxi = length(entries)
     if fromDelete
         maxi += 2
+    else
+        sort!(entries)
     end
     for ii in range(1, maxi-1)
         delete!(grid, grid[1,ii+1])
