@@ -6,17 +6,21 @@ struct ListEntry
     time::String
 end
 
+cancel_button = Button()
 start_button = Button()
+clear_button = Button()
+add_button2 = Button()
+add_button = Button()
 time_label = Label("")
 run_timer = true
-start_t = DateTime(0)
-popup_glade_file = ""
-popup_window = Window(visible=false)
-name_entry = Entry()
-entries = ListEntry[]
 grid = Grid()
-window = Window(visible=false)
+name_entry = Entry()
+popup_glade_file = ""
+start_t = DateTime(0)
+entries = ListEntry[]
 resizable_widgets = []
+window = Window(visible=false)
+popup_window = Window(visible=false)
 
 Base.:(==)(x::ListEntry, y::ListEntry) = x.name == y.name
 Base.:(<)(x::ListEntry, y::ListEntry) = x.time < y.time
@@ -56,6 +60,7 @@ function startStopButton(widget)
         run_timer = false
         setproperty!(widget, :label, "Start")
     end
+    return true
 end
 
 function clearButton(widget)
@@ -68,26 +73,27 @@ function clearButton(widget)
 end
 
 function addButton(widget)
-    global time_label, popup_glade_file, popup_window, name_entry
+    global time_label, popup_glade_file, popup_window, name_entry, add_button2, cancel_button
     builder2 = Builder(filename=popup_glade_file)
     popup_window = builder2["window1"]
     setproperty!(popup_window, :title, "Add new entry! :)")
-    add_button = builder2["button1"]
+    add_button2 = builder2["button1"]
     cancel_button = builder2["button2"]
     name_entry = builder2["entry1"]
-    signal_connect(addNewName, add_button, "clicked")
+    signal_connect(popupKeySwitch, popup_window, "key-press-event")
+    signal_connect(addNewName, add_button2, "clicked")
     signal_connect(killPopup, cancel_button, "clicked")
     showall(popup_window)
 end
 
 function increaseFont(widget)
-    global time_label, grid
+    #global time_label, grid
     #println(getproperty(time_label, :attributes, PangoAttrList))
     #setproperty!(time_label, :use_markup, true)
 end
 
 function decreaseFont(widget)
-    global time_label, grid
+    #global time_label, grid
     #println(fieldnames(typeof(time_label)))
     #println(getproperty(time_label, :font, Int))
 end
@@ -156,8 +162,28 @@ function updateEntries(fromDelete=false)
     showall(window)
 end
 
+function keySwitch(widget, event)
+    global start_button, add_button, clear_button
+    if event.keyval == 115 #s
+        startStopButton(start_button)
+    elseif event.keyval == 97 #a
+        addButton(widget)
+    elseif event.keyval == 99 #c
+        clearButton(clear_button)
+    end
+end
+
+function popupKeySwitch(widget, event)
+    global add_button2, cancel_button
+    if event.keyval == 65293 #enter
+        addNewName(add_button2)
+    elseif event.keyval == 65307 #esc
+        killPopup(cancel_button)
+    end
+end
+
 function main()
-    global start_button, time_label, popup_glade_file, grid, window
+    global start_button, add_button, clear_button, time_label, popup_glade_file, grid, window
     popup_glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/name_popup.glade"
     glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/main_window.glade"
     builder = Builder(filename=glade_file)
@@ -176,6 +202,7 @@ function main()
     signal_connect(addButton, add_button, "clicked")
     signal_connect(increaseFont, plus_button, "clicked")
     signal_connect(decreaseFont, minus_button, "clicked")
+    signal_connect(keySwitch, window, "key-press-event")
 
     time_label = builder["label1"]
 
