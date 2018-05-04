@@ -215,6 +215,6 @@ function main()
     end
 end
 
-
-# TODO scrollable grid, keyboard shortcuts
+# Only TODO left:
+# fixt font size buttons!
 main()
