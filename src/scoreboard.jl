@@ -115,7 +115,6 @@ function increaseFont(widget)
         for i in grid
             if ! (typeof(i) <: Button)
                 mu = "<span font_desc=\"Sans "*string(rest_curr_size)*"\">"*getproperty(i, :label, String)[27:end-7]*"</span>"
-                println(mu)
                 GAccessor.markup(i, mu)
             end
         end
@@ -138,7 +137,6 @@ function decreaseFont(widget)
         for i in grid
             if ! (typeof(i) <: Button)
                 mu = "<span font_desc=\"Sans "*string(rest_curr_size)*"\">"*getproperty(i, :label, String)[27:end-7]*"</span>"
-                println(mu)
                 GAccessor.markup(i, mu)
             end
         end
@@ -289,4 +287,6 @@ end
 
 # TODO
 # fix widgets pushing each other on very large fonts
+# TODO
+# way to increase and decrease only the timer or only the scoreboard
 main()
