@@ -257,9 +257,7 @@
                     <property name="can_focus">False</property>
                     <property name="halign">end</property>
                     <property name="label" translatable="yes">00:00.000</property>
-                    <attributes>
-                      <attribute name="font-desc" value="&lt;Enter Value&gt; 32"/>
-                    </attributes>
+                    <property name="use_markup">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -318,7 +316,7 @@
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
