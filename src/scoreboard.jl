@@ -346,6 +346,4 @@ function main()
     end
 end
 
-# TODO
-# fix widgets pushing each other on very large fonts
 main()
