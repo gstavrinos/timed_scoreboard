@@ -123,6 +123,32 @@ function increaseFont(widget)
     end
 end
 
+function increaseTimerFont(widget)
+    global time_label, timer_curr_size, max_timer_size
+    timer_curr_size += 1
+    if ! (timer_curr_size > max_timer_size)
+        mu = "<span font_desc=\"Sans "*string(timer_curr_size)*"\">"*getproperty(time_label, :label, String)[27:end-7]*"</span>"
+        GAccessor.markup(time_label, mu)
+    else
+        timer_curr_size = max_timer_size
+    end
+end
+
+function increaseScoreFont(widget)
+    global grid, rest_curr_size, max_rest_size
+    rest_curr_size += 1
+    if ! (rest_curr_size > max_rest_size)
+        for i in grid
+            if ! (typeof(i) <: Button)
+                mu = "<span font_desc=\"Sans "*string(rest_curr_size)*"\">"*getproperty(i, :label, String)[27:end-7]*"</span>"
+                GAccessor.markup(i, mu)
+            end
+        end
+    else
+        rest_curr_size = max_rest_size
+    end
+end
+
 function decreaseFont(widget)
     global time_label, grid, rest_curr_size, timer_curr_size, min_rest_size, min_timer_size
     timer_curr_size -= 1
@@ -132,6 +158,32 @@ function decreaseFont(widget)
     else
         timer_curr_size = min_timer_size
     end
+    rest_curr_size -= 1
+    if ! (rest_curr_size < min_rest_size)
+        for i in grid
+            if ! (typeof(i) <: Button)
+                mu = "<span font_desc=\"Sans "*string(rest_curr_size)*"\">"*getproperty(i, :label, String)[27:end-7]*"</span>"
+                GAccessor.markup(i, mu)
+            end
+        end
+    else
+        rest_curr_size = min_rest_size
+    end
+end
+
+function decreaseTimerFont(widget)
+    global time_label, timer_curr_size, min_timer_size
+    timer_curr_size -= 1
+    if ! (timer_curr_size < min_timer_size)
+        mu = "<span font_desc=\"Sans "*string(timer_curr_size)*"\">"*getproperty(time_label, :label, String)[27:end-7]*"</span>"
+        GAccessor.markup(time_label, mu)
+    else
+        timer_curr_size = min_timer_size
+    end
+end
+
+function decreaseScoreFont(widget)
+    global grid, rest_curr_size, min_rest_size
     rest_curr_size -= 1
     if ! (rest_curr_size < min_rest_size)
         for i in grid
@@ -231,7 +283,16 @@ function keySwitch(widget, event)
         increaseFont(widget)
     elseif event.keyval == 95 #-
         decreaseFont(widget)
+    elseif event.keyval == 49 #1
+        decreaseScoreFont(widget)
+    elseif event.keyval == 50 #2
+        increaseScoreFont(widget)
+    elseif event.keyval == 57 #9
+        decreaseTimerFont(widget)
+    elseif event.keyval == 48 #0
+        increaseTimerFont(widget)
     end
+    #println(event.keyval)
 end
 
 function popupKeySwitch(widget, event)
@@ -287,6 +348,4 @@ end
 
 # TODO
 # fix widgets pushing each other on very large fonts
-# TODO
-# way to increase and decrease only the timer or only the scoreboard
 main()
