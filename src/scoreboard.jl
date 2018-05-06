@@ -304,6 +304,21 @@ function popupKeySwitch(widget, event)
     end
 end
 
+function helpButton(widget)
+    info_dialog("Keyboard Shortcuts:\n
+        a: (a)dd new entry\n 
+        s: (s)tart/(s)top timer\n
+        c: (c)lear timer\n
+        1: decrease scoreboard font\n
+        2: increase scoreboard font\n
+        9: decrease timer font\n
+        0: increase timer font\n
+        -: decrease all fonts\n
+        +: increase all fonts\n
+        enter: submit entry (while in new entry window)\n
+        esc: cancel new entry (while in new entry window)")
+end
+
 function main()
     global start_button, add_button, clear_button, time_label, popup_glade_file, grid, window, timer_curr_size
     popup_glade_file = rsplit(@__FILE__,"/",limit=3)[1] * "/glade_files/name_popup.glade"
@@ -318,12 +333,14 @@ function main()
     add_button = builder["button4"]
     plus_button = builder["button3"]
     minus_button = builder["button5"]
+    help_button = builder["button6"]
     grid = builder["grid1"]
     signal_connect(startStopButton, start_button, "clicked")
     signal_connect(clearButton, clear_button, "clicked")
     signal_connect(addButton, add_button, "clicked")
     signal_connect(increaseFont, plus_button, "clicked")
     signal_connect(decreaseFont, minus_button, "clicked")
+    signal_connect(helpButton, help_button, "clicked")
     signal_connect(keySwitch, window, "key-press-event")
 
     time_label = builder["label1"]
